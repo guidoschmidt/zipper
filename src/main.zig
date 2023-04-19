@@ -25,7 +25,7 @@ fn onRequest(r: zap.SimpleRequest) void {
         const parsed = std.json.parse(ImageData, &stream, .{
             .allocator = allocator
         }) catch undefined;
-        std.debug.print("\n→ {s}.{s}", .{ parsed.filename, parsed.ext });
+        std.debug.print("\r → Saving {s}/{s}.{s} …", .{ parsed.foldername , parsed.filename, parsed.ext });
         
         const schema = "data:image/octet-stream;base64,";
         const data_str = parsed.imageData[schema.len..];
@@ -65,6 +65,7 @@ pub fn main() !void {
     try listener.listen();
     std.debug.print(
         \\ → Listening on http://0.0.0.0:3000
+        \\
     , .{});
     zap.start(.{
         .threads = 2,

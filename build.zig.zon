@@ -1,0 +1,10 @@
+.{
+    .name = "zipper",
+    .version = "0.0.1",
+    .dependencies = .{
+        .zap = .{
+            .url = "https://github.com/zigzap/zap/archive/17d72e1b784e4cdfe81633ab87d5bb0f8680e492.tar.gz",
+            .hash = "1220e0648ff7ba063ec0c4381efcf051eea20675f373ad87faac0688140fc400c16f",
+        }
+    }
+}
