@@ -18,46 +18,57 @@ const ImageData = struct {
     ext: []const u8,
 };
 
-fn onRequest(r: zap.SimpleRequest) void {
+fn onRequest(r: zap.Request) void {
     if (std.mem.eql(u8, r.method.?, "POST")) {
         const body_str = r.body orelse "";
-        var stream = std.json.TokenStream.init(body_str);
-        const parsed = std.json.parse(ImageData, &stream, .{
-            .allocator = allocator
-        }) catch undefined;
-        std.debug.print("\r → Saving {s}/{s}.{s} …", .{ parsed.foldername , parsed.filename, parsed.ext });
-        
+
+        // var tokenizer = std.json.Scanner.initCompleteInput(allocator, body_str);
+        // defer tokenizer.deinit();
+        // const token = tokenizer.next();
+
+        const parsed = std.json.parseFromSlice(ImageData, allocator, body_str, .{}) catch {
+            return;
+        };
+        defer parsed.deinit();
+        const result = parsed.value;
+
+        std.debug.print("\r → Saving {s}/{s}.{s} …", .{ result.foldername, result.filename, result.ext });
+
         const schema = "data:image/octet-stream;base64,";
-        const data_str = parsed.imageData[schema.len..];
+        const data_str = result.imageData[schema.len..];
         var decoded_length = b64_decoder.calcSizeForSlice(data_str) catch return;
         var data_decoded: []u8 = allocator.alloc(u8, decoded_length) catch return;
         b64_decoder.decode(data_decoded, data_str) catch return;
 
-        const subpath = std.fmt.bufPrintZ(&temp_buffer,
-                                          "./imgdata/{s}/",
-                                          .{ parsed.foldername }) catch return;
+        const subpath = std.fmt.bufPrintZ(&temp_buffer, "./imgdata/{s}/", .{ result.foldername }) catch return;
         cwd.makePath(subpath) catch return;
 
-        const filename_ext = std.fmt.bufPrintZ(&temp_buffer,
-                                               "{s}/{s}.{s}",
-                                               .{ subpath,
-                                                 parsed.filename,
-                                                 parsed.ext }) catch return;
+        const filename_with_ext = std.fmt.allocPrint(allocator, "{s}/{s}.{s}", .{
+            subpath, result.filename, result.ext
+        }) catch unreachable;
+        defer allocator.free(filename_with_ext);
 
-        const out_file = cwd.createFile(filename_ext, .{ .read = false }) catch return;
-        out_file.writeAll(data_decoded) catch return;
+        const out_file = cwd.createFile(filename_with_ext, .{ .read = false }) catch return;
         defer out_file.close();
+        out_file.writeAll(data_decoded) catch return;
+
         var json_to_send: []const u8 =
             \\{ "succes": true }
         ;
-        r.setHeader("Access-Control-Allow-Origin", "*");
-        r.setContentType(.JSON);
-        _ = r.sendJson(json_to_send);
+        r.setHeader("Access-Control-Allow-Origin", "*") catch {
+            return;
+        };
+        r.setContentType(.JSON) catch {
+            return;
+        };
+        _ = r.sendJson(json_to_send) catch {
+            return;
+        };
     }
 }
 
 pub fn main() !void {
-    var listener = zap.SimpleHttpListener.init(.{
+    var listener = zap.HttpListener.init(.{
         .port = 3000,
         .on_request = onRequest,
         .log = false,
