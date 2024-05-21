@@ -1,11 +1,11 @@
 .{
     .name = "zipper",
-    .version = "0.0.1",
+    .version = "0.1.0",
+    .paths = .{ "" },
     .dependencies = .{
-        // zap v0.5.0
-        .zap = .{
-            .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.5.0.tar.gz",
-            .hash = "1220aabff84ad1d800f5657d6a49cb90dab3799765811ada27faf527be45dd315a4d",
+        .tokamak = .{
+            .url = "https://github.com/cztomsik/tokamak/archive/71700ea4cf2d96af7084f5cd3cfb5e12b4bf675b.tar.gz",
+            .hash = "122061f0d4a384760601ea540f1edfe688f54afec5c9c2b4459b06e526459dfc73df",
         }
     }
 }

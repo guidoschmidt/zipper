@@ -1,21 +1,16 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const zap = b.dependency("zap", .{
+    const exe = b.addExecutable(.{
+        .root_source_file = .{ .path = "zig/main.zig" },
+        .name = "zipper",
         .target = target,
         .optimize = optimize,
     });
-
-    const exe = b.addExecutable(.{
-        .root_source_file = .{ .path = "src/main.zig" },
-        .name = "zipper",
-        .target = target,
-    });
-    exe.addModule("zap", zap.module("zap"));
-    exe.linkLibrary(zap.artifact("facil.io"));
+    exe.root_module.addImport("tokamak", b.dependency("tokamak", .{}).module("tokamak"));
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
