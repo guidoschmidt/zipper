@@ -1,5 +1,11 @@
 import { saveCanvasToBackend } from "../ts/zipper";
 
+declare global {
+  interface Window {
+    record: boolean;
+  }
+}
+
 const canvas = document.createElement("canvas");
 canvas.width = 1080;
 canvas.height = 1080;
@@ -7,6 +13,7 @@ document.body.appendChild(canvas);
 
 const ctx = canvas.getContext("2d");
 let frame = 0;
+
 window.record = true;
 
 const animate = async (t: number) => {

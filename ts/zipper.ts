@@ -10,9 +10,7 @@ export async function saveCanvasToBackend(
   if (canvas === null) {
     throw new Error(`No canvas element with ${selector} found`);
   }
-  const dataUrl = canvas!
-    .toDataURL("image/png")
-    ?.replace("image/png", "image/octet-stream");
+  const dataUrl = canvas!.toDataURL("image/png");
   const data = {
     imageData: dataUrl,
     foldername: `${sequence}`,

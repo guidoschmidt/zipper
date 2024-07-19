@@ -9,7 +9,7 @@ const b64_decoder = b64.standard.Decoder;
 
 var temp_buffer: [100]u8 = undefined;
 
-const ImageData = struct {
+pub const ImageData = struct {
     imageData: []const u8,
     foldername: []const u8,
     filename: []const u8,
@@ -28,8 +28,7 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
     const out_file = try cwd.createFile(filename_with_ext, .{ .read = false });
     defer out_file.close();
 
-
-    const schema = "data:image/octet-stream;base64,";
+    const schema = "data:image/png;base64,";
     const data_str = image_data.imageData[schema.len..];
     const decoded_length = try b64_decoder.calcSizeForSlice(data_str);
     const data_decoded: []u8 = try allocator.alloc(u8, decoded_length);
@@ -38,17 +37,18 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
 
     try out_file.writeAll(data_decoded);
 
-    std.debug.print("\r → Saving {s}/{s}.{s} …", .{ image_data.foldername, image_data.filename, image_data.ext });
+    std.debug.print("\r --- Saving {s}/{s}.{s} …", .{ image_data.foldername, image_data.filename, image_data.ext });
 }
 
 pub fn main() !void {
-    std.debug.print("\nRunnig tokamak", .{});
+    const port: u16 = 8000;
+    std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{ port });
 
     var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    var server = try tk.Server.start(allocator, handler, .{ .port = 8000 });
+    var server = try tk.Server.start(allocator, handler, .{ .port = port });
     server.wait();
 }
 
