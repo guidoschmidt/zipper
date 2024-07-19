@@ -1,11 +1,17 @@
 .{
     .name = "zipper",
     .version = "0.0.1",
+    .paths = .{
+        "src/",
+        "build.zig",
+        "build.zig.zon",
+        "README.md",
+    },
     .dependencies = .{
         // zap v0.5.0
         .zap = .{
-            .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.5.0.tar.gz",
-            .hash = "1220aabff84ad1d800f5657d6a49cb90dab3799765811ada27faf527be45dd315a4d",
+            .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.8.0.tar.gz",
+            .hash = "12209936c3333b53b53edcf453b1670babb9ae8c2197b1ca627c01e72670e20c1a21",
         }
     }
 }

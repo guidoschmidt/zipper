@@ -36,8 +36,8 @@ fn onRequest(r: zap.Request) void {
 
         const schema = "data:image/octet-stream;base64,";
         const data_str = result.imageData[schema.len..];
-        var decoded_length = b64_decoder.calcSizeForSlice(data_str) catch return;
-        var data_decoded: []u8 = allocator.alloc(u8, decoded_length) catch return;
+        const decoded_length = b64_decoder.calcSizeForSlice(data_str) catch return;
+        const data_decoded: []u8 = allocator.alloc(u8, decoded_length) catch return;
         b64_decoder.decode(data_decoded, data_str) catch return;
 
         const subpath = std.fmt.bufPrintZ(&temp_buffer, "./imgdata/{s}/", .{ result.foldername }) catch return;
@@ -52,7 +52,7 @@ fn onRequest(r: zap.Request) void {
         defer out_file.close();
         out_file.writeAll(data_decoded) catch return;
 
-        var json_to_send: []const u8 =
+        const json_to_send: []const u8 =
             \\{ "succes": true }
         ;
         r.setHeader("Access-Control-Allow-Origin", "*") catch {
