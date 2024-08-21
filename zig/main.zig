@@ -7,7 +7,7 @@ const cwd = fs.cwd();
 const b64 = std.base64;
 const b64_decoder = b64.standard.Decoder;
 
-var temp_buffer: [100]u8 = undefined;
+var temp_buffer: [256]u8 = undefined;
 
 pub const ImageData = struct {
     imageData: []const u8,
@@ -40,28 +40,34 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
     std.debug.print("\r --- Saving {s}/{s}.{s} …", .{ image_data.foldername, image_data.filename, image_data.ext });
 }
 
-pub fn main() !void {
-    const port: u16 = 8000;
-    std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{ port });
-
-    var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
+fn runServer(port: u16) !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
-
     var server = try tk.Server.start(allocator, handler, .{ .port = port });
     server.wait();
 }
 
+pub fn main() !void {
+    const port: u16 = 8000;
+    std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{ port });
+    std.debug.print("\n{any}", .{ std.json.default_max_value_len });
+    tk.monitor(.{
+        .{ "server", &runServer, .{ port } },
+        // @TODO test worker support
+        // .{ "worker", &runWorker, .{} },
+    });
+}
+
 const handler = tk.chain(.{
     tk.cors(),
-    // tk.get("/", tk.send("zipper")),
     tk.group("/", tk.router(api)),
     tk.send(error.NotFound),
 });
 
 const api = struct {
-    pub fn @"POST /"(allocator: std.mem.Allocator, image_data: ImageData) ![]const u8 {
+    pub fn @"POST /"(allocator: std.mem.Allocator, image_data: ImageData) !u32 {
         try storeImage(allocator, image_data);
-        return std.fmt.allocPrint(allocator, "\n{any}", .{ image_data });
+        return 200;
     }
 };
