@@ -13,6 +13,10 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("tokamak", b.dependency("tokamak", .{}).module("tokamak"));
     b.installArtifact(exe);
 
+    const zstbi = b.dependency("zstbi", .{});
+    exe.root_module.addImport("zstbi", zstbi.module("root"));
+    exe.linkLibrary(zstbi.artifact("zstbi"));
+
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {

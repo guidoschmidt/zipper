@@ -8,6 +8,17 @@ declare global {
   }
 }
 
+const videoEl = document.createElement("video");
+videoEl.src =
+  "https://videos.pexels.com/video-files/7033786/7033786-uhd_2560_1440_25fps.mp4";
+videoEl.muted = true;
+videoEl.playsInline = true;
+videoEl.controls = true;
+videoEl.autoplay = false;
+videoEl.loop = true;
+videoEl.crossOrigin = "anonymous";
+document.body.appendChild(videoEl);
+
 const canvas = document.createElement("canvas");
 canvas.width = 6000;
 canvas.height = 6000;
@@ -18,7 +29,7 @@ let frame = 0;
 let sequenceName = Date.now();
 
 let rotation = 0;
-let fps = 60;
+let fps = 25;
 
 const animate = () => {
   ctx.fillStyle = "black";
@@ -32,6 +43,8 @@ const animate = () => {
   ctx.fillRect(0, 0, 10, rectSize);
   ctx.restore();
 
+  ctx.drawImage(videoEl, 0, 0);
+
   if (window.record) {
     saveCanvasToBackendWithWorker(
       "http://127.0.0.1:8000/",
@@ -41,14 +54,16 @@ const animate = () => {
       workerUrl,
     );
     frame++;
+    videoEl.currentTime = frame / fps;
   }
 
   rotation += 1.0 / fps;
 
   if (!window.record) {
-    requestAnimationFrame(animate);
-    // setTimeout(() => animate(), (1.0 / fps) * 1000);
+    // requestAnimationFrame(animate);
+    setTimeout(() => animate(), (1.0 / fps) * 1000);
   } else {
+    videoEl.pause();
     setTimeout(() => animate(), (1.0 / fps) * 1000);
   }
 };
