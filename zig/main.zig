@@ -65,12 +65,15 @@ pub fn main() !void {
 
     const port: u16 = 8000;
     std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{port});
-    std.debug.print("\n{any}", .{std.json.default_max_value_len});
 
-    const server = try tk.Server.init(allocator, routes, .{ .listen = .{
-        .hostname = "127.0.0.1",
-        .port = port,
-    } });
+    const server = try tk.Server.init(allocator, routes, .{
+        .listen = .{
+            .hostname = "127.0.0.1",
+            .port = port,
+        }, .request = .{
+            .max_body_size = 100 * 1920 * 1920,
+        }
+    });
     try server.start();
 }
 
