@@ -21,7 +21,7 @@ pub const ImageData = struct {
 };
 
 fn storeImage(allocator: Allocator, image_data: ImageData) !void {
-    const subpath = try std.fmt.bufPrintZ(&temp_buffer, "./imgdata/{s}/", .{ image_data.foldername });
+    const subpath = try std.fmt.bufPrintZ(&temp_buffer, "./imgdata/{s}/", .{image_data.foldername});
     try cwd.makePath(subpath);
     const output_file = std.fmt.allocPrintZ(allocator, "{s}/{s}_{d:0>8}.{s}", .{
         subpath, image_data.filename, image_data.frame_num, image_data.ext,
@@ -30,7 +30,7 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
     };
     defer allocator.free(output_file);
 
-    const img = zstbi.Image {
+    const img = zstbi.Image{
         .width = @intCast(image_data.width),
         .height = @intCast(image_data.height),
         .num_components = 4,
@@ -40,10 +40,10 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
         .is_hdr = false,
     };
     zstbi.Image.writeToFile(img, output_file, .png) catch |err| {
-        std.log.err("{any}", .{ err });
+        std.log.err("{any}", .{err});
     };
 
-    std.debug.print("\n>>> {s}", .{ output_file });
+    std.debug.print("\n>>> {s}", .{output_file});
 
     // const schema = "data:image/png;base64,";
     // const data_str = image_data.imageData[schema.len..];
@@ -54,7 +54,7 @@ fn storeImage(allocator: Allocator, image_data: ImageData) !void {
     // try out_file.writeAll(data_decoded);
 }
 
-fn runServer(port: u16) !void {
+pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
@@ -63,27 +63,22 @@ fn runServer(port: u16) !void {
     zstbi.setFlipVerticallyOnWrite(true);
     defer zstbi.deinit();
 
-    var server = try tk.Server.start(allocator, handler, .{ .port = port });
-    server.wait();
-}
-
-pub fn main() !void {
     const port: u16 = 8000;
-    std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{ port });
-    std.debug.print("\n{any}", .{ std.json.default_max_value_len });
-    // tk.monitor(.{
-    //     .{ "server", &runServer, .{ port } },
-    //     // @TODO test worker support
-    //     // .{ "worker", &runWorker, .{} },
-    // });
-    try runServer(port);
+    std.debug.print("\nRunnig tokamak\n>>> http://127.0.0.1:{d}", .{port});
+    std.debug.print("\n{any}", .{std.json.default_max_value_len});
+
+    const server = try tk.Server.init(allocator, routes, .{ .listen = .{
+        .hostname = "127.0.0.1",
+        .port = port,
+    } });
+    try server.start();
 }
 
-const handler = tk.chain(.{
+const routes: []const tk.Route = &.{
     tk.cors(),
-    tk.group("/", tk.router(api)),
-    tk.send(error.NotFound),
-});
+    .group("/", &.{.router(api)}),
+    .send(error.NotFound),
+};
 
 const api = struct {
     pub fn @"POST /"(req: *tk.Request, allocator: std.mem.Allocator, image_data: ImageData) !u32 {

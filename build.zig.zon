@@ -4,8 +4,8 @@
     .paths = .{ "" },
     .dependencies = .{
         .tokamak = .{
-            .url = "https://github.com/guidoschmidt/tokamak/archive/ed502c3440069d35410e0377ae2425db75c27949.tar.gz",
-            .hash = "1220212f58b01ad0e25c62cdb2320d043b751fe67641b8bc6c0133af6fa8d3d751ec",
+            .url = "https://github.com/guidoschmidt/tokamak/archive/93b977bc10b5a2002cdb2dc4a80fc008d010915b.tar.gz",
+            .hash = "1220a2d312dd66a2941bfb3267214b471776df796bfc86bb58ff1fcf0e84e035092b",
         },
         .zstbi = .{ .path = "./libs/zig-gamedev/libs/zstbi", },
     }
