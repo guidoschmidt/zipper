@@ -1,3 +1,5 @@
+[![CI](https://github.com/guidoschmidt/zipper/actions/workflows/build.yaml/badge.svg)](https://github.com/guidoschmidt/zipper/actions/workflows/build.yaml)
+
 # zipper
 > zig REST api server to store image data requests, 
 > e.g. for saving web canvas data
