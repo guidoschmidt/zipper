@@ -1,0 +1,20 @@
+.{
+    .name = "zig.opengl",
+    .version = "0.0.0",
+    .dependencies = .{
+        .zipper = .{
+            .path = "../../",
+        },
+        .zigglgen = .{
+            .path = "./libs/zigglgen",
+        },
+        .zglfw = .{
+            .path = "./libs/zig-gamedev/libs/zglfw",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

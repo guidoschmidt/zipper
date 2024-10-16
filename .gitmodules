@@ -4,3 +4,9 @@
 [submodule "libs/zig-gamedev"]
 	path = libs/zig-gamedev
 	url = git@github.com:zig-gamedev/zig-gamedev.git
+[submodule "examples/zig.opengl/libs/zigglgen"]
+	path = examples/zig.opengl/libs/zigglgen
+	url = git@github.com:castholm/zigglgen.git
+[submodule "examples/zig.opengl/libs/zig-gamedev"]
+	path = examples/zig.opengl/libs/zig-gamedev
+	url = git@github.com:zig-gamedev/zig-gamedev.git

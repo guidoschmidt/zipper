@@ -1,7 +1,12 @@
 .{
     .name = "zipper",
     .version = "0.1.0",
-    .paths = .{ "" },
+    .paths = .{
+        "src",
+        "build.zig",
+        "build.zig.zon",
+        "README.md",
+    },
     .dependencies = .{
         .tokamak = .{
             .url = "https://github.com/guidoschmidt/tokamak/archive/93b977bc10b5a2002cdb2dc4a80fc008d010915b.tar.gz",

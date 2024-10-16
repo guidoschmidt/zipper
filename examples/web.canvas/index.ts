@@ -1,4 +1,4 @@
-import { saveCanvasToBackendWithWorker } from "../ts/zipper";
+import { saveCanvasToBackendWithWorker } from "../../ts/zipper";
 
 const workerUrl = new URL("./worker", import.meta.url);
 
